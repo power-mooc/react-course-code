@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+// useEffect
 function App() {
   // 1
   // const queryData = async () => {
