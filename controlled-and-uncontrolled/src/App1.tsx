@@ -1,3 +1,4 @@
+// 非受控模式
 import { ChangeEvent } from 'react';
 
 function App() {
