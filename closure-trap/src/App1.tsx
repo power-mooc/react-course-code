@@ -1,21 +1,22 @@
 // React 组件如何写 TypeScript 类型
-interface childProps {
+interface AaaProps {
   name: string;
   content: React.ReactNode;
 }
 
-function Child(props: childProps) {
+const Aaa: React.FunctionComponent<AaaProps> = (props) => {
   return (
     <div>
-      {props.name} {props.content}
+      aaa, {props.name}
+      {props.content}
     </div>
   );
-}
+};
 
 function App() {
   return (
     <div>
-      <Child name="power" content={<button>btn</button>} />
+      <Aaa name="power" content={<button>btn</button>} />
     </div>
   );
 }
