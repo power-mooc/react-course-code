@@ -10,7 +10,6 @@ function Calendar() {
     setDate(new Date(date.getFullYear(), date.getMonth() + 1, date.getDate()));
   };
 
-  // 渲染日期
   const daysOfMonth = (year: number, month: number) => {
     // 获取一个月有多少天
     return new Date(year, month + 1, 0).getDate();
@@ -18,7 +17,7 @@ function Calendar() {
   const firstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay();
   };
-
+  // 渲染日期
   const renderDates = () => {
     const days = [];
     const daysCount = daysOfMonth(date.getFullYear(), date.getMonth());
