@@ -4,8 +4,8 @@ interface LocaleContextType {
   locale: string;
 }
 
-const localeContent = createContext<LocaleContextType> ({
+const LocaleContent = createContext<LocaleContextType> ({
   locale: 'zh_CN'
 });
 
-export default localeContent;
+export default LocaleContent;

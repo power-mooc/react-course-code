@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import Calendar from './Calendar';
 import dayjs from 'dayjs';
 function App() {
+  const [value, setValue] = useState(dayjs());
   return (
     <div className="App">
-      <Calendar locale='en-US' dateInnerContent={(value => {
-        return <div>
-          <p style={{background: 'yellowgreen', height: '20px'}}>{value.format('YYYY-MM-DD')}</p>
-        </div>
-      })}value={dayjs('2024-11-30')}></Calendar>
+       {/* 非受控模式 */}
+       <Calendar defaultValue={dayjs('2023-11-08')}></Calendar>
+       {/* 受控模式 */}
+       <Calendar value={value} onChange={(val) => {
+        setValue(val)
+      }}></Calendar>
     </div>
   );
 }
