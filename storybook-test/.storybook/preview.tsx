@@ -3,7 +3,6 @@ import { Title, Subtitle, Description, Primary, Controls, Stories } from '@story
 import React from 'react';
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
         color: /(background|color)$/i,
