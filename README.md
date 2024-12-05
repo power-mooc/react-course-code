@@ -3,3 +3,5 @@
 [迷你 calendar日历组件](./calendar-test/)
 
 [ calendar日历组件](./calendar-component/)
+
+[ Icon组件](./icon-component/)
