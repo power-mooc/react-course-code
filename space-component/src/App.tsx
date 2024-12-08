@@ -1,11 +1,12 @@
-import { ConfigProvider, Space } from 'antd';
 import './App.css';
+import Space from './Space';
+import { ConfigProvider } from './Space/ConfigProvider';
 
 export default function App() {
   return (
     <div>
-      <ConfigProvider space={{ size: 100 }}>
-        <Space direction="horizontal">
+      <ConfigProvider space={{ size: 20 }}>
+        <Space split={<div className="box" style={{ background: 'yellow' }}></div>} direction="horizontal">
           <div className="box"></div>
           <div className="box"></div>
           <div className="box"></div>
