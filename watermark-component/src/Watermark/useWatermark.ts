@@ -70,6 +70,7 @@ const getCanvasData = async (options: Required<WatermarkOptions>): Promise<{ wid
     };
   };
 
+  // 文字渲染
   const drawText = () => {
     const { fontSize, color, fontWeight, fontFamily } = fontStyle;
     const realFontSize = toNumber(fontSize, 0) || fontStyle.fontSize;
@@ -96,7 +97,7 @@ const getCanvasData = async (options: Required<WatermarkOptions>): Promise<{ wid
     });
     return Promise.resolve({ base64Url: canvas.toDataURL(), height, width });
   };
-
+  // 图片渲染
   function drawImage() {
     return new Promise<{ width: number; height: number; base64Url: string }>((resolve) => {
       const img = new Image();
@@ -126,24 +127,24 @@ const getCanvasData = async (options: Required<WatermarkOptions>): Promise<{ wid
 
   return image ? drawImage() : drawText();
 };
-// 默认选项
-const defaultOptions = {
-  rotate: -20,
-  zIndex: 1,
-  width: 100,
-  gap: [100, 100],
-  fontStyle: {
-    fontSize: '16px',
-    color: 'rgba(0, 0, 0, 0.15)',
-    fontFamily: 'sans-serif',
-    fontWeight: 'normal',
-  },
-  getContainer: () => document.body,
-};
+
 // 合并
 const getMergedOptions = (o: Partial<WatermarkOptions>) => {
+  // 默认选项
+  const defaultOptions = {
+    rotate: -20,
+    zIndex: 1,
+    width: 100,
+    gap: [100, 100],
+    fontStyle: {
+      fontSize: '16px',
+      color: 'rgba(0, 0, 0, 0.15)',
+      fontFamily: 'sans-serif',
+      fontWeight: 'normal',
+    },
+    getContainer: () => document.body,
+  };
   const options = o || {};
-
   const mergedOptions = {
     ...options,
     rotate: options.rotate || defaultOptions.rotate,
@@ -170,19 +171,24 @@ export const useWatermark = (params: WatermarkOptions) => {
   // 容器
   const container = mergedOptions.getContainer();
   const { zIndex, gap } = mergedOptions;
+  // 监听删除容器
+  const mutationObserver = useRef<MutationObserver>();
   // 画水印
   const drawWatermark = () => {
     if (!container) {
       return;
     }
 
+    // 核心方法
     getCanvasData(mergedOptions).then(({ base64Url, width, height }) => {
+      const offsetLeft = mergedOptions.offset[0] + 'px';
+      const offsetTop = mergedOptions.offset[1] + 'px';
       const wmStyle = `
-      width:100%;
-      height:100%;
+      width:calc(100%-${offsetLeft});
+      height:calc(100%-${offsetTop});
       position:absolute;
-      top:0;
-      left:0;
+      top:${offsetTop};
+      left:${offsetLeft};
       bottom:0;
       right:0;
       pointer-events: none;
@@ -200,12 +206,43 @@ export const useWatermark = (params: WatermarkOptions) => {
       }
 
       watermarkDiv.current?.setAttribute('style', wmStyle.trim());
+
+      if (container) {
+        mutationObserver.current?.disconnect();
+
+        mutationObserver.current = new MutationObserver((mutations) => {
+          const isChanged = mutations.some((mutation) => {
+            let flag = false;
+            // 删除属性
+            if (mutation.removedNodes.length) {
+              // array.from 类数组转化成数组
+              flag = Array.from(mutation.removedNodes).some((node) => node === watermarkDiv.current);
+            }
+            // 移除属性
+            if (mutation.type === 'attributes' && mutation.target === watermarkDiv.current) {
+              flag = true;
+            }
+            return flag;
+          });
+          if (isChanged) {
+            watermarkDiv.current = undefined;
+            drawWatermark();
+          }
+        });
+
+        mutationObserver.current.observe(container, {
+          attributes: true,
+          subtree: true,
+          childList: true,
+        });
+      }
     });
   };
   useEffect(() => {
     drawWatermark();
   }, [options]);
   return {
+    // 返回生成方法
     generateWatermark(newOptions: Partial<WatermarkOptions>) {
       setOptions(merge({}, options, newOptions));
     },
